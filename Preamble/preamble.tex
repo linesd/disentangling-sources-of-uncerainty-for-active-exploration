@@ -102,9 +102,16 @@
 \usepackage{datetime}
 \newdate{date}{12}{08}{2019}
 \date{\displaydate{date}}
+% circle with numbers
+\usepackage{IEEEtrantools,stackengine}
+\stackMath
+\usepackage{tikz}
+\newcommand\encircle[1]{%
+  \tikz[baseline=(X.base)] 
+    \node (X) [draw, shape=circle, inner sep=0] {\strut #1};}
 % *********************************** SI Units *********************************
 \usepackage{siunitx} % use this package module for SI units
-
+\usepackage{wrapfig}
 
 % ******************************* Line Spacing *********************************
 
@@ -136,8 +143,8 @@
 
 % If you would like to use biblatex for your reference management, as opposed to the default `natbibpackage` pass the option `custombib` in the document class. Comment out the previous line to make sure you don't load the natbib package. Uncomment the following lines and specify the location of references.bib file
 
-%\RequirePackage[backend=biber, style=numeric-comp, citestyle=numeric, sorting=nty, natbib=true]{biblatex}
-%\addbibresource{References/references} %Location of references.bib only for biblatex, Do not omit the .bib extension from the filename.
+% \RequirePackage[backend=biber, style=numeric-comp, citestyle=numeric, sorting=nty, natbib=true]{biblatex}
+% \addbibresource{References/references} %Location of references.bib only for biblatex, Do not omit the .bib extension from the filename.
 
 \fi
 
