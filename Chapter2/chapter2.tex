@@ -11,7 +11,7 @@
     \graphicspath{{Chapter2/Figs/Vector/}{Chapter2/Figs/}{Chapter2/Figures/}}
 \fi
 
-This section describes how the sources of uncertainty in PILCO's decision making process are disentangled and quantified. First, section \ref{S:PILCO} provides a brief introduction to the PILCO algorithm. In Section \ref{S:approximating-pilcos-gp} a finite-weight trigonometric Bayesian regression model is introduced to approximate PILCO's probabilistic Gaussian Process (GP) dynamics model. Section \ref{S:sparse-approximation} relates the trigonometric model to a full GP by showing that it can be interpreted as sparse spectrum GP that can approximate any full GP. The sources of uncertainty in transition function and their effect on the cost are discussed in section \ref{S:disentangling-uncertainty} and a variance decomposition to separate and quantify the uncertainty into its aleatoric and epistemic constituents is presented. Finally, section \ref{S:monte-carlo-estimate} presents a "gold-standard" Monte-Carlo scheme to estimate the aleatoric and epistemic uncertainties. 
+This section describes how the sources of uncertainty in PILCO's decision making process are disentangled and quantified. First, section \ref{S:PILCO} provides a brief introduction to the PILCO algorithm. In Section \ref{S:approximating-pilcos-gp} a finite-parameter trigonometric Bayesian regression model is introduced to approximate PILCO's probabilistic Gaussian Process (GP) dynamics model. Section \ref{S:sparse-approximation} relates the trigonometric model to a full GP by showing that it can be interpreted as sparse spectrum GP that can approximate any full GP. The sources of uncertainty in transition function and their effect on the cost are discussed in section \ref{S:disentangling-uncertainty} and a variance decomposition to separate and quantify the uncertainty into its aleatoric and epistemic constituents is presented. Finally, section \ref{S:monte-carlo-estimate} presents a "gold-standard" Monte-Carlo scheme to estimate the aleatoric and epistemic uncertainties. 
 
 \section{PILCO}
 \label{S:PILCO}
@@ -19,7 +19,7 @@ PILCO \citep{deisenroth2011pilco} is a model-based indirect policy search method
 \begin{equation}
     \mathbf{x}_{t+1}=f\left(\mathbf{x}_{t}, \mathbf{u}_{t}\right)+\mathbf{\eta}, \quad \mathbf{\eta} \sim \mathcal{N}\left(\mathbf{0}, \boldgreek{\Sigma}_{\eta}\right)
 \end{equation}
-where the transition dynamics $f$ of the system are unknown. The objective is to find a deterministic \textit{controller/policy} $\pi : \mathbf{x} \mapsto \pi(\mathbf{x}, \boldgreek{\theta})=\mathbf{u}$ such that the expected return   \citep{deisenroth2013gaussian}
+where the transition dynamics $f$ of the system are unknown. The objective is to find a deterministic \textit{controller/policy} $\pi : \mathbf{x} \mapsto \pi(\mathbf{x}, \boldgreek{\theta})=\mathbf{u}$ such that the expected cost \citep{deisenroth2013gaussian}
 \begin{equation}
     J^{\pi}(\theta)=\sum_{t=0}^{T} \mathbb{E}_{\mathbf{x}_{t}}\left[\mathbb{C}\left(\mathbf{x}_{t}\right)\right], \quad \mathbf{x}_{0} \sim \mathcal{N}\left(\boldgreek{\mu}_{0}, \boldgreek{\Sigma}_{0}\right)
     \label{Eq:PILCO-expected-return}
@@ -29,7 +29,7 @@ is minimised after following $\pi$ for $T$ steps. The policy is parametrised by 
     \mathbb{C}(\mathbf{x}_{t})=1-\exp \left(-\frac{1}{2 \sigma_{c}^{2}} ||\mathbf{x}_{t}- \mathbf{x}_{\text { target }}||^{2}\right) \in[0,1]
     \label{Eq:PILCO-cost-function}
 \end{equation}
-which exclusively penalises the Euclidean distance $||\mathbf{x}_{t}- \mathbf{x}_{\text { target }}||^{2}$ from the current state $\mathbf{x}_{t}$ to the target state $\mathbf{x}_{\text { target }}$. $\mathbb{C}(\mathbf{x}_{t})$ is locally quadratic and saturates at 1 for large differences between the current state and target state. The saturation distance is controlled by the width parameter $\sigma_{c}$.
+which exclusively penalises the Euclidean distance $||\mathbf{x}_{t}- \mathbf{x}_{\text { target }}||$ from the current state $\mathbf{x}_{t}$ to the target state $\mathbf{x}_{\text { target }}$. $\mathbb{C}(\mathbf{x}_{t})$ is locally quadratic and saturates at 1 for large differences between the current state and target state. The saturation distance is controlled by the width parameter $\sigma_{c}$.
 
 \subsection{GP Model Learning}
 \label{PILCO:GP-model-learning}
@@ -57,12 +57,12 @@ where $\tilde{\mathbf{x}} = \left[\mathbf{x}\quad\mathbf{u}\right]^{T}$ is the s
 \label{PILCO:policy-evaluation}
 PILCO evaluates a given policy by predicting the state evolution over the course of an episode. This is accomplished by propagating uncertain inputs through the dynamics model, using the one-step predictions (Eqs. \ref{Eq:PILCO-one-step-1} - \ref{Eq:PILCO-one-step-3}), to obtain $p\left(\mathbf{x}_{1} | \pi\right), \ldots, p\left(\mathbf{x}_{T} | \pi\right)$ from a given start state distribution $p\left(\mathbf{x}_{0}\right)$. Predicting $\mathbf{x}_{t+1}$ from $p(\mathbf{x}_{t})$ requires evaluation of the predictive distribution over state differences
 \begin{equation}
-    p\left(\Delta_{t}\right)=\iint p\left(f\left(\tilde{\mathbf{x}}_{t}\right) | \left(\tilde{\mathbf{x}}_{t}\right)\right) p\left(\tilde{\mathbf{x}}_{t}\right) \mathrm{d} f \mathrm{d} \tilde{\mathbf{x}}_{t},
+    p\left(\Delta_{t}\right)=\iint p\left(f\left(\tilde{\mathbf{x}}_{t}\right) | \tilde{\mathbf{x}}_{t}\right) p\left(\tilde{\mathbf{x}}_{t}\right) \mathrm{d} f \mathrm{d} \tilde{\mathbf{x}}_{t},
     \label{Eq:PILCO-predictive-state-differences}
 \end{equation}
 by integrating out the random function of the GP distribution and the random variable $\tilde{\mathbf{x}}_{t}$. Here $p\left(\tilde{\mathbf{x}}_{t}\right)=p\left(\mathbf{x}_{t}, \mathbf{u}_{t}\right)$ is the joint state-action distribution. Since the predictive distribution in Eq. \ref{Eq:PILCO-predictive-state-differences} is analytically intractable for uncertain inputs, it is approximated as a Gaussian distribution using \textit{moment matching} (see Fig. \ref{Fig:moment-matching}). This approximation ensures that the state distribution is given by $p\left(\tilde{\mathbf{x}}_{t}\right)=\mathcal{N}\left(\tilde{\mathbf{x}}_{t} | \tilde{\mathbf{\mu}}_{t}, \tilde{\boldgreek{\Sigma}}_{t}\right)$ for all $t$. This, alongside the choice of cost function (Eq. \ref{Eq:PILCO-cost-function}) enables the expected return (Eq. \ref{Eq:PILCO-expected-return}) to be evaluated analytically according to
 \begin{equation}
-    \mathbb{E}_{\mathbf{x}_{t}}\left[c\left(\mathbf{x}_{t}\right)\right]=\int c\left(\mathbf{x}_{t}\right) \mathcal{N}\left(\mathbf{x}_{t} | \boldgreek{\mu}_{t}, \boldgreek{\Sigma}_{t}\right) \mathrm{d} \mathbf{x}_{t}
+    \mathbb{E}_{\mathbf{x}_{t}}\left[\mathbb{C}\left(\mathbf{x}_{t}\right)\right]=\int \mathbb{C}\left(\mathbf{x}_{t}\right) \mathcal{N}\left(\mathbf{x}_{t} | \boldgreek{\mu}_{t}, \boldgreek{\Sigma}_{t}\right) \mathrm{d} \mathbf{x}_{t}
 \end{equation}
 for $t=1,\dots,T$.
 
@@ -75,7 +75,7 @@ for $t=1,\dots,T$.
 
 \subsection{Policy Improvement}
 \label{PILCO:policy-improvement}
-PILCO is an indirect policy search method and does not require an explicit value function model. Instead it learns a \textit{parametrised policy} that can select actions without consulting a value function. Due to the moment matching approximation, the state distribution is considered to be Gaussian $p\left(\tilde{\mathbf{x}}_{t}\right)=\mathcal{N}\left(\tilde{\mathbf{x}}_{t} | \tilde{\mathbf{\mu}}_{t}, \tilde{\boldgreek{\Sigma}}_{t}\right)$ for all $t$, where $\tilde{\mathbf{x}}_{t} = (\mathbf{x}_{t},\mathbf{u}_{t})$. The control signal  $\mathbf{u}_{t-1} = \pi\left(\mathbf{x}_{t-1}, \theta\right)$ is a function of the state, and hence the next state is also functionally dependent on the mean $\mu_{u}$ and covariance $\boldgreek{\Sigma}_{u}$ of the control signal. This relationship allows the gradients of the expected return $J^{\pi}$, with respect to the policy parameters $\boldgreek{\theta}$, to be computed analytically. The policy parameters are then learned to \textit{maximise} performance (\textit{minimise} cost) for a given task, so their updates approximate gradient \textit{descent} in $J$ \citep{sutton2018reinforcement}:
+PILCO is an indirect policy search method and does not require an explicit value function model. Instead it learns a \textit{parametrised policy} that can select actions without consulting a value function. Due to the moment matching approximation, the state distribution is considered to be Gaussian $p\left(\tilde{\mathbf{x}}_{t}\right)=\mathcal{N}\left(\tilde{\mathbf{x}}_{t} | \tilde{\mathbf{\mu}}_{t}, \tilde{\boldgreek{\Sigma}}_{t}\right)$ for all $t$, where $\tilde{\mathbf{x}}_{t} = (\mathbf{x}_{t},\mathbf{u}_{t})$. The control signal  $\mathbf{u}_{t-1} = \pi\left(\mathbf{x}_{t-1}, \theta\right)$ is a function of the state, and hence the next state is also functionally dependent on the mean $\mu_{u}$ and covariance $\boldgreek{\Sigma}_{u}$ of the control signal. This relationship allows the gradients of the expected return $J^{\pi}$, with respect to the policy parameters $\boldgreek{\theta}$, to be computed analytically. The policy parameters are then learned to \textit{maximise} performance (\textit{minimise} cost) for a given task, so their updates approximate \textit{conjugate gradient minimisation} in $J$ \citep{sutton2018reinforcement}:
 \begin{equation}
     \boldgreek{\theta}_{t+1}=\boldgreek{\theta}_{t} - \alpha\nabla J^{\pi}\left(\boldgreek{\theta_{t}}\right),
 \end{equation}
@@ -100,7 +100,7 @@ where $\alpha$ is the learning rate. For a more thorough explanation of PILCO se
 
 \section{Approximating PILCO's GP}
 \label{S:approximating-pilcos-gp}
-At the heart of the Monte Carlo uncertainty approximation is the need for one-step predictions using a function sampled from the posterior distribution of PILCO's dynamics model. The use of the squared exponential covariance function in PILCO's GP corresponds to a Bayesian linear regression model with an infinite number of basis functions \citep{williams2006gaussian}. This means drawing a representative function requires an infinite number of weights since each basis function is accompanied by its own weight. To overcome this issue, a finite-weight stationary trigonometric Bayesian regression model \citep{quia2010sparse} is used to approximate PILCO's GP. In addition to solving the sampling issue, this model provides other advantages. First, the periodicity of the trigonometric basis functions means that one does not need to explicitly specify the mean for each basis function. Second, a direct GP implementation has practical limitations with regards to computational and memory requirements, which scale as $\mathcal{O}(n^{2})$ and $\mathcal{O}(n^{3})$, respectively. The trigonometric model has computational requirements of $\mathcal{O}(nm^{2})$ and memory requirements of $\mathcal{O}(nm)$ where $m<<n$ \citep{quia2010sparse}, which are typical values for sparse GP approximations \citep{quinonero2005unifying}. The largest PILCO environment used for this research (cart double pendulum) generates approximately $4k$ data points. The model is first introduced here in a traditional treatment of Bayesian linear regression. Section \ref{S:one-step-predictions} relates the model to PILCO's one-step predictions. Finally, section \ref{S:sparse-approximation} shows that the model can be viewed as a sparse stationary GP that can approximate any full GP.
+At the heart of the Monte Carlo uncertainty approximation is the need for one-step predictions using a function sampled from the posterior distribution of PILCO's dynamics model. The use of the squared exponential covariance function in PILCO's GP corresponds to a Bayesian linear regression model with an infinite number of basis functions \citep{williams2006gaussian}. This means drawing a representative function requires an infinite number of weights since each basis function is accompanied by its own weight. To overcome this issue, a finite-weight stationary trigonometric Bayesian regression model \citep{quia2010sparse} is used to approximate PILCO's GP. In addition to solving the sampling issue, this model provides other advantages. First, the periodicity of the trigonometric basis functions means that one does not need to explicitly specify the location for each basis function. Second, a direct GP implementation has practical limitations with regards to computational and memory requirements, which scale as $\mathcal{O}(n^{2})$ and $\mathcal{O}(n^{3})$, respectively. The trigonometric model has computational requirements of $\mathcal{O}(nm^{2})$ and memory requirements of $\mathcal{O}(nm)$ where $m<<n$ \citep{quia2010sparse}, which are typical values for sparse GP approximations \citep{quinonero2005unifying}. The largest PILCO environment used for this research (cart double pendulum) generates approximately $4k$ data points. The model is first introduced here in a traditional treatment of Bayesian linear regression. Section \ref{S:one-step-predictions} relates the model to PILCO's one-step predictions. Finally, section \ref{S:sparse-approximation} shows that the model can be viewed as a sparse stationary GP that can approximate any full GP.
 
 The model consists of a linear combination of trigonometric functions \citep{quia2010sparse}
 \begin{equation}
@@ -261,7 +261,7 @@ where $p(\Delta_{*} | \tilde{\mathbf{x}}_{*}, \mathbf{w})$ is the model likeliho
 Since PILCO is a direct policy search method, the cost function is consulted directly when minimising $J^{\pi}$ in Eq. \ref{Eq:PILCO-expected-return}, therefore, only uncertainty in the transition function that directly influences uncertainty on the cost $\mathbb{C}(\mathbf{x})$ is of concern. Another way to view this is that the model's representation of the state-action space can be exceedingly large for complex environments and exploring regions in state space that are irrelevant for the task of learning control is a waste of both time and memory
 resources . Ultimately, one is only interested in uncertainty that is associated with trajectories through the space that yield low cost solutions. In the following treatment, the cost is specified as $\mathbb{C}^{\pi}(\mathbf{x}_{t})$ to denote the cost of state $\mathbf{x}$ and time $t$ under policy $\pi$. 
 
-There are a number of metrics that can be used to represent uncertainty in the transition function. In this work, variance is used as the primary agent, but its relation to entropy is made explicit in the following section. First, the variance of the cost is expressed of the aleatoric uncertainty where all sources of aleatory are grouped into the term  $\varepsilon$
+There are a number of metrics that can be used to represent uncertainty in the transition function. In this work, variance of the cost is used as the primary agent, but its relation to entropy is made explicit in the following section. First, the variance of the cost is expressed of the aleatoric uncertainty where all sources of aleatory are grouped into the term  $\varepsilon$
 \begin{equation}
     \mathbb{V}_{\varepsilon}\left(\mathbb{C}^{\pi}\left(\mathbf{x}_{t}\right)\right)=\mathbb{E}_{\varepsilon}\left[\mathbb{C}^{\pi}(\mathbf{x}_{t})^{2}\right] - \mathbb{E}_{\varepsilon}\left[\mathbb{C}^{\pi}(\mathbf{x}_{t})\right]^{2}.
 \end{equation}
@@ -321,39 +321,3 @@ The detailed steps of the procedure are shown in Algorithm \ref{GSMCUE:algorithm
 \State Compute epistemic uncertainty: $\sum^{T-1}_{t=0}\left\{\frac{\mathbf{1}^{\top}\mathbb{V}_{M}\left(\mathbb{C}^{\pi}(\mathbf{x}_{t})\right)}{M}\right\}$ \Comment{Eq. \ref{Eq:MC-uncertainty-decomposition}}
 \end{algorithmic}
 \end{algorithm}
-
-\clearpage
-
-\tochide\section{Hidden section}
-
-
-
-\begin{landscape}
-
-\section*{Subplots}
-I can cite Wall-E (see Fig.~\ref{fig:WallE}) and Minions in despicable me (Fig.~\ref{fig:Minnion}) or I can cite the whole figure as Fig.~\ref{fig:animations}
-
-
-\begin{figure}
-  \centering
-  \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[width=\textwidth]{TomandJerry}
-    \caption{Tom and Jerry}
-    \label{fig:TomJerry}   
-  \end{subfigure}             
-  \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[width=\textwidth]{WallE}
-    \caption{Wall-E}
-    \label{fig:WallE}
-  \end{subfigure}             
-  \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[width=\textwidth]{minion}
-    \caption{Minions}
-    \label{fig:Minnion}
-  \end{subfigure}
-  \caption{Best Animations}
-  \label{fig:animations}
-\end{figure}
-
-
-\end{landscape}
