@@ -12,6 +12,7 @@
 \fi
 
 \section{Environments}
+\label{S:PILCO-environments}
 \begin{table}
 \caption{Even better looking table using booktabs}
 \centering
@@ -133,28 +134,10 @@ Fig \ref{Fig:Re-evolution-of-state-and-cost} shows the evolution of the distribu
 \end{figure}
 
 \subsection{A Decomposition of Transition Function Uncertainty}
-A toy data set is used to illustrate the Monte-Carlo scheme for estimating the aleatoric and epistemic uncertainties present in the cost $\mathbb{C}(\mathbf{x})$ under policy $\pi$. Similar to the previous experiment, a 1-dimensional transition function is used and an explicit policy is not defined. This is viewed as if there is only one action available for selection and the agent selects that action at each opportunity. In this experiment, the agent begins by observing 4 transition data points. It then progressively observes more data a single point at a time up to a total of 50 data points. At each observation, the trigonometric basis function model is used to form a belief over the transition dynamics of the environment. Fig. \ref{Fig:Re-pred-4-points}-\ref{Fig:Re-pred-50-points} shows the predictive distribution over the transition data and 4 functions sampled from the posterior distribution over the weights after 4, 25 and 50 observations, respectively. For this, the lengthscale of the spectral points was purposely set to a large value to over fit the data as can be seen in Fig. \ref{Fig:Re-pred-4-points}. This was done for two reasons: to artificially induce more epistemic uncertainty into the model and to be more representative of a higher dimensional space where the observation of a single data point provides the model with more information than in the 1-dimensional case. The figures show that as more data is observed, the model becomes increasingly confident about the parameters and as a consequence the posterior distribution narrows. 
+A toy data set (noise variance of 0.0625) is used to illustrate the Monte-Carlo scheme for estimating the aleatoric and epistemic uncertainties present in the cost $\mathbb{C}(\mathbf{x})$ under policy $\pi$. Similar to the previous experiment, a 1-dimensional transition function is used and an explicit policy is not defined. This is viewed as if there is only one action available for selection and the agent selects that action at each opportunity. This allows the system dynamics to evolve freely over time. In this experiment, the agent begins by observing 4 transition data points. It then progressively observes more data a single point at a time up to a total of 50 data points. At each observation, the trigonometric basis function model is used to form a belief over the transition dynamics of the environment. Fig. \ref{Fig:Re-pred-4-points}-\ref{Fig:Re-pred-50-points} shows the predictive distribution over the transition data and 4 functions sampled from the posterior distribution over the parameters after 4, 25 and 50 observations, respectively. For this, the lengthscale of the spectral points is purposely set to a large value to over fit the data as can be seen in Fig. \ref{Fig:Re-pred-4-points}. This is done for two reasons: to artificially induce more epistemic uncertainty into the model and to be more representative of a higher dimensional space where the observation of a single data point provides the model with more information than in the 1-dimensional case. The figures show that as more data is observed, the model becomes increasingly confident about the parameters. This can be seen in the functions drawn from the posterior distribution over the model parameters which increasingly resemble the predictive mean as confidence grows. 
 
-Each time a new data point is observed, Monte-Carlo trajectory roll outs are performed through the model using the one-step predictions following the procedure described in Sec. \ref{S:monte-carlo-estimate} for ($M=100,\: N=100,\: T=100$). The uncertainty 
-
- using Eq. \ref{S:monte-carlo-estimate}
-
-% In model-based reinforcement learning, as the agent interacts with an environment it imparts actions and observes transitions through the state-space. It then uses these data to build a belief about the world which it can search to plan future interactions. The uncertainty present in the  transitions through the environment dynamics under a particular policy $\pi$ creates uncertainty in the cost, of which there are both aleatoric and epistemic components. A toy dataset is used here to illustrate how the Monte-Carlo scheme in 
-
-
-% In complex problems with large state-spaces only limited parts of the space are relevant to the learning objective and the agent must make decisions 
-
-% and uses this model to search for its next policy. 
-% to plan its next policy to maximise information retrieval in the next trial. As more data are observed, these beliefs are refined and the agent becomes increasingly confident about its understanding. In complex problems with large state-spaces only limited parts of the space are relevant to the learning objective and the agent must decisions 
-
-
-% extract relevant information from the data to make informed decision about where to explore. 
-
-
-% On it's path through the state space, the agent encounters both epist
-
-% This can be illustrated with a 1-dimensional toy data set 
-% represents a policy to explore the whole space
+Each time a new data point is observed, Monte-Carlo trajectory roll outs are performed through the model using the procedure described in Sec. \ref{S:monte-carlo-estimate} and the uncertainty is decomposed into its aleatoric and epistemic components using Eq. \ref{S:monte-carlo-estimate}. The Monte-Carlo roll outs are performed for $(M=100,\: N=100,\: T=100)$ and transition noise of variance 0.09. Fig. \ref{Fig:Re-reduction-in-epsitemic-with-more-data} shows the uncertainty breakdown as a function of number of data points. As the number of data points increases the model becomes more confident about the parameters and the epistemic uncertainty decreases. With the reduction in epistemic uncertainty, the total uncertainty also reduces and the gap between the aleatoric and total uncertainty decreases. This is because each time the roll outs are performed, they are done so under the same policy. Should the policy be different after each new observation (as is typically the case after observing new data) the uncertainties would be different under each policy as will be demonstrated for the PILCO experiments. Finally, one might expect the epistemic uncertainty to decrease monotonically as more data is observed and roll outs are performed under the same policy, but the reduction appears noisy. This could be a consequence of the Monte-Carlo approach and should reduce with a larger number of roll outs.
+ 
 \begin{figure}[htp!]    
   \begin{subfigure}[b]{0.95\linewidth}
     \centering
@@ -184,7 +167,7 @@ Each time a new data point is observed, Monte-Carlo trajectory roll outs are per
 \begin{figure}[htp!]
 \centering    
 \includegraphics[width=1\textwidth]{Chapter3/Figures/func_uncertainty_4.png}
-\caption[Uncertainty decomposition showing reduction in epistemic uncertainty with increasing number of data points]{Relating to Fig. \ref{Fig:Re-predictive-fit-to-varying-number-of-datapoints}. Trajectory roll outs were performed through the transition function each time a new data point was observed (from 4 to 50). For each roll out the uncertainty in the cost was decomposed. As more data is observed the model becomes increasingly confident about its parameters and consequently the epistemic uncertainty reduces due contraction of the posterior distribution.}
+\caption[Uncertainty decomposition showing reduction in epistemic uncertainty with increasing number of data points]{Relating to Fig. \ref{Fig:Re-predictive-fit-to-varying-number-of-datapoints}. Trajectory roll outs are performed through the transition function each time a new data point is observed (from 4 to 50). For each roll out the uncertainty in the cost is decomposed. As more data is observed the model becomes increasingly confident about its parameters and consequently the epistemic uncertainty reduces due to contraction of the posterior distribution.}
 \label{Fig:Re-reduction-in-epsitemic-with-more-data}
 \end{figure}
 
@@ -260,161 +243,290 @@ Each time a new data point is observed, Monte-Carlo trajectory roll outs are per
 % \label{} 
 % \end{figure}
 % \end{landscape}
+\subsection{How Does PILCO Use Uncertainty in Decision Making?}
+In this section, Monte-Carlo uncertainty analyses  are presented for the 3 PILCO environments introduced in Sec. \ref{S:PILCO-environments}. 
 
-\subsection{Result Cart-Pole}
-As the agent interacts with the environment, it exerts its influence through actions which in turn lead a change of state. A carefully crafted set of actions can realise exploration of parts of the state space that are useful in learning the objective.
- In complex problems with large state-spaces only limited parts of the space are relevant to the learning objective and 
-\begin{figure}[htp!]    
-  \begin{subfigure}[b]{0.48\linewidth}
+
+After each each  the trigonometric basis function model is trained on the data generated The Monte-Carlo scheme is run alongside PILCO 
+
+\subsubsection{Cart-pole}
+ \begin{figure}[htp!]    
+   \begin{subfigure}[b]{1\linewidth}
     \centering
-    \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/cp_MC_rollout_Ep_15_Dim_1.png} 
+    \includegraphics[height=0.4\textheight,width=1\textwidth]{Chapter3/Figures/cp_MC_rollout_Ep_15_Dim_1.png} 
     \caption{Cart position $x$} 
     \label{Fig:Re-cp-cart-position} 
   \end{subfigure} 
-  \hspace{\fill}  %% maximize space between adjacent subfigures
-  \begin{subfigure}[b]{0.48\linewidth}
+%   \hspace{\fill}  %% maximize space between adjacent subfigures
+  \begin{subfigure}[b]{1\linewidth}
     \centering
-    \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/cp_MC_rollout_Ep_15_Dim_2.png} 
+    \includegraphics[height=0.4\textheight,width=1\textwidth]{Chapter3/Figures/cp_MC_rollout_Ep_15_Dim_2.png} 
     \caption{Cart velocity $\dot x$} 
     \label{Fig:Re-cp-cart-velocity} 
   \end{subfigure} 
-
-  \vspace{4ex}  %% extra vertical space
-  \begin{subfigure}[b]{0.48\linewidth}
+\caption[Monte-Carlo roll outs for \textbf{cart-pole} cart position and cart velocity]{Monte-Carlo roll outs for the \textbf{cart-pole} environment for cart position and cart velocity. Figures show a random sample of the Monte-Carlo trajectories for episode 15. The first three legend items (actual trajectory, target, PILCO prediction and MC trajectories) correspond to the state variable axis (left axis) and the magenta line shows the percentage of MC trajectories inside PILCO's prediction (2 standard deviations) (right axis)}
+\label{Re:cp-MC-roll-outs-1} 
+\end{figure}
+ 
+ 
+\begin{figure}[htp!]    
+  \begin{subfigure}[b]{1\linewidth}
     \centering
-    \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/cp_MC_rollout_Ep_15_Dim_3.png} 
+    \includegraphics[height=0.4\textheight,width=1\textwidth]{Chapter3/Figures/cp_MC_rollout_Ep_15_Dim_3.png} 
     \caption{Pendulum angular velocity $\dot \theta$} 
     \label{Fig:Re-cp-pen-velocity} 
   \end{subfigure} 
-  \hspace{\fill}
-  \begin{subfigure}[b]{0.48\linewidth}
+
+  \begin{subfigure}[b]{1\linewidth}
     \centering
-    \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/cp_MC_rollout_Ep_15_Dim_4.png} 
+    \includegraphics[height=0.4\textheight,width=1\textwidth]{Chapter3/Figures/cp_MC_rollout_Ep_15_Dim_4.png} 
     \caption{Pendulum angle $\theta$} 
     \label{Fig:Re-cp-pen-angle} 
   \end{subfigure} 
-
-    \vspace{4ex}
-  \begin{subfigure}[b]{0.48\linewidth}
+\caption[Monte-Carlo roll outs for \textbf{cart-pole} pendulum angular velocity and pendulum angle]{Monte-Carlo roll outs for the \textbf{cart-pole} environment for pendulum angular velocity and pendulum angle. Figures show a random sample of the Monte-Carlo trajectories for episode 15. The first three legend items (actual trajectory, target, PILCO prediction and MC trajectories) correspond to the state variable axis (left axis) and the magenta line shows the percentage of MC trajectories inside PILCO's prediction (2 standard deviations) (right axis)}
+\label{Re:cp-MC-roll-outs-2} 
+\end{figure}
+ 
+\begin{figure}[htp!]    
+  \begin{subfigure}[b]{1\linewidth}
     \centering
-    \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/cp_uncertainty.png} 
+    \includegraphics[height=0.4\textheight,width=1\textwidth]{Chapter3/Figures/cp_uncertainty.png} 
     \caption{Average cost (left axis) and uncertainty decomposition (right axis) for each episode over the course of learning.} 
     \label{Fig:Re-cp-uncertainty} 
   \end{subfigure}
-  \hspace{\fill}
-  \begin{subfigure}[b]{0.48\linewidth}
+  
+  \begin{subfigure}[b]{1\linewidth}
     \centering
-    \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/cp_uncertainty_norm.png} 
+    \includegraphics[height=0.4\textheight,width=1\textwidth]{Chapter3/Figures/cp_uncertainty_norm.png} 
     \caption{Average cost (left axis) and ratio of epistemic to total uncertainty (right axis) for each episode over the course of learning.} 
     \label{Fig:Re-cp-uncertainty-norm} 
-  \end{subfigure} 
-\caption[Monte-Carlo uncertainty decomposition for for \textbf{cart-pole} environment]{Monte-Carlo uncertainty decomposition for the \textbf{cart-pole} environment. Figs. \ref{Fig:Re-cp-cart-position} - \ref{Fig:Re-cp-pen-angle} show a random sample of the Monte-Carlo trajectories for each of the state variables for episode 15. The first three legend items (actual trajectory, target, PILCO prediction and MC trajectories) correspond to the state variable axis (left axis) and the magenta line shows the percentage of MC trajectories inside PILCO's prediction (2 standard deviations) (right axis).  Figs. \ref{Fig:Re-cp-uncertainty} - \ref{Fig:Re-cp-uncertainty-norm} show the average cost (left axis) and uncertainty (right axis) for each episode over the course of learning.}
-\label{Fig:Re-Cart-Pole-Full-Results} 
+  \end{subfigure}  
+\caption[Uncertainty decomposition for \textbf{cart-pole} environment]{Figures show the average cost (left axis) and uncertainty (right axis) for each episode over the course of learning.}
+\label{Fig:Re-cp-full-uncertainty} 
 \end{figure}
+ 
+ 
+% \begin{figure}[htp!]    
+%   \begin{subfigure}[b]{0.48\linewidth}
+%     \centering
+%     \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/cp_MC_rollout_Ep_15_Dim_1.png} 
+%     \caption{Cart position $x$} 
+%     \label{Fig:Re-cp-cart-position} 
+%   \end{subfigure} 
+%   \hspace{\fill}  %% maximize space between adjacent subfigures
+%   \begin{subfigure}[b]{0.48\linewidth}
+%     \centering
+%     \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/cp_MC_rollout_Ep_15_Dim_2.png} 
+%     \caption{Cart velocity $\dot x$} 
+%     \label{Fig:Re-cp-cart-velocity} 
+%   \end{subfigure} 
 
-\subsection{Results Pendubot}
+%   \vspace{4ex}  %% extra vertical space
+%   \begin{subfigure}[b]{0.48\linewidth}
+%     \centering
+%     \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/cp_MC_rollout_Ep_15_Dim_3.png} 
+%     \caption{Pendulum angular velocity $\dot \theta$} 
+%     \label{Fig:Re-cp-pen-velocity} 
+%   \end{subfigure} 
+%   \hspace{\fill}
+%   \begin{subfigure}[b]{0.48\linewidth}
+%     \centering
+%     \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/cp_MC_rollout_Ep_15_Dim_4.png} 
+%     \caption{Pendulum angle $\theta$} 
+%     \label{Fig:Re-cp-pen-angle} 
+%   \end{subfigure} 
 
-\begin{figure}[htp!]    
-  \begin{subfigure}[b]{0.48\linewidth}
+%     \vspace{4ex}
+%   \begin{subfigure}[b]{0.48\linewidth}
+%     \centering
+%     \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/cp_uncertainty.png} 
+%     \caption{Average cost (left axis) and uncertainty decomposition (right axis) for each episode over the course of learning.} 
+%     \label{Fig:Re-cp-uncertainty} 
+%   \end{subfigure}
+%   \hspace{\fill}
+%   \begin{subfigure}[b]{0.48\linewidth}
+%     \centering
+%     \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/cp_uncertainty_norm.png} 
+%     \caption{Average cost (left axis) and ratio of epistemic to total uncertainty (right axis) for each episode over the course of learning.} 
+%     \label{Fig:Re-cp-uncertainty-norm} 
+%   \end{subfigure} 
+% \caption[Monte-Carlo uncertainty decomposition for for \textbf{cart-pole} environment]{Monte-Carlo uncertainty decomposition for the \textbf{cart-pole} environment. Figs. \ref{Fig:Re-cp-cart-position} - \ref{Fig:Re-cp-pen-angle} show a random sample of the Monte-Carlo trajectories for each of the state variables for episode 15. The first three legend items (actual trajectory, target, PILCO prediction and MC trajectories) correspond to the state variable axis (left axis) and the magenta line shows the percentage of MC trajectories inside PILCO's prediction (2 standard deviations) (right axis).  Figs. \ref{Fig:Re-cp-uncertainty} - \ref{Fig:Re-cp-uncertainty-norm} show the average cost (left axis) and uncertainty (right axis) for each episode over the course of learning.}
+% \label{Fig:Re-Cart-Pole-Full-Results} 
+% \end{figure}
+
+\subsubsection{Pendubot}
+ \begin{figure}[htp!]    
+    \begin{subfigure}[b]{1\linewidth}
     \centering
-    \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/pen_MC_rollout_Ep_40_Dim_1.png} 
+    \includegraphics[height=0.4\textheight,width=1\textwidth]{Chapter3/Figures/pen_MC_rollout_Ep_40_Dim_1.png} 
     \caption{Pendulum angular velocity $\dot \theta_{2}$} 
     \label{Fig:Re-pen-cart-position} 
   \end{subfigure} 
   \hspace{\fill}  %% maximize space between adjacent subfigures
-  \begin{subfigure}[b]{0.48\linewidth}
+  \begin{subfigure}[b]{1\linewidth}
     \centering
-    \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/pen_MC_rollout_Ep_40_Dim_2.png} 
+    \includegraphics[height=0.4\textheight,width=1\textwidth]{Chapter3/Figures/pen_MC_rollout_Ep_40_Dim_2.png} 
     \caption{Pendulum angular velocity $\dot \theta_{3}$} 
     \label{Fig:Re-pen-cart-velocity} 
   \end{subfigure} 
-
-  \vspace{4ex}  %% extra vertical space
-  \begin{subfigure}[b]{0.48\linewidth}
+\caption[Monte-Carlo roll outs for \textbf{pendubot} pendulum angular velocities]{Monte-Carlo roll outs for the \textbf{pendubot} environment for pendulum angular velocities. Figures show a random sample of the Monte-Carlo trajectories for episode 20. The first three legend items (actual trajectory, target, PILCO prediction and MC trajectories) correspond to the state variable axis (left axis) and the magenta line shows the percentage of MC trajectories inside PILCO's prediction (2 standard deviations) (right axis)}
+\label{Re:pen-MC-roll-outs-1} 
+\end{figure}
+ 
+ 
+\begin{figure}[htp!]    
+   \begin{subfigure}[b]{1\linewidth}
     \centering
-    \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/pen_MC_rollout_Ep_40_Dim_3.png} 
+    \includegraphics[height=0.4\textheight,width=1\textwidth]{Chapter3/Figures/pen_MC_rollout_Ep_40_Dim_3.png} 
     \caption{Pendulum angle $\theta_2$} 
     \label{Fig:Re-pen-pen-velocity} 
   \end{subfigure} 
   \hspace{\fill}
-  \begin{subfigure}[b]{0.48\linewidth}
+  \begin{subfigure}[b]{1\linewidth}
     \centering
-    \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/pen_MC_rollout_Ep_40_Dim_4.png} 
+    \includegraphics[height=0.4\textheight,width=1\textwidth]{Chapter3/Figures/pen_MC_rollout_Ep_40_Dim_4.png} 
     \caption{Pendulum angle $\theta_3$} 
     \label{Fig:Re-pen-pen-angle} 
   \end{subfigure} 
 
-    \vspace{4ex}
-  \begin{subfigure}[b]{0.48\linewidth}
+\caption[Monte-Carlo roll outs for \textbf{pendubot} pendulum angles]{Monte-Carlo roll outs for the \textbf{pendubot} environment for pendulum angles. Figures show a random sample of the Monte-Carlo trajectories for episode 20. The first three legend items (actual trajectory, target, PILCO prediction and MC trajectories) correspond to the state variable axis (left axis) and the magenta line shows the percentage of MC trajectories inside PILCO's prediction (2 standard deviations) (right axis)}
+\label{Re:pen-MC-roll-outs-2} 
+\end{figure}
+ 
+\begin{figure}[htp!]    
+   \begin{subfigure}[b]{1\linewidth}
     \centering
-    \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/pen_uncertainty.png} 
+    \includegraphics[height=0.4\textheight,width=1\textwidth]{Chapter3/Figures/pen_uncertainty.png} 
     \caption{Average cost (left axis) and uncertainty decomposition (right axis) for each episode over the course of learning.} 
     \label{Fig:Re-pen-uncertainty} 
   \end{subfigure}
   \hspace{\fill}
-  \begin{subfigure}[b]{0.48\linewidth}
+  \begin{subfigure}[b]{1\linewidth}
     \centering
-    \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/pen_uncertainty_norm.png} 
+    \includegraphics[height=0.4\textheight,width=1\textwidth]{Chapter3/Figures/pen_uncertainty_norm.png} 
     \caption{Average cost (left axis) and ratio of epistemic to total uncertainty (right axis) for each episode over the course of learning.} 
     \label{Fig:Re-pen-uncertainty-norm} 
   \end{subfigure} 
-\caption[Monte-Carlo uncertainty decomposition for for \textbf{pendubot} environment]{Monte-Carlo uncertainty decomposition for the \textbf{pendubot} environment. Figs. \ref{Fig:Re-cp-cart-position} - \ref{Fig:Re-cp-pen-angle} show a random sample of the Monte-Carlo trajectories for each of the state variables for episode 20. The first three legend items (actual trajectory, target, PILCO prediction and MC trajectories) correspond to the state variable axis (left axis) and the magenta line shows the percentage of MC trajectories inside PILCO's prediction (2 standard deviations) (right axis). Figs. \ref{Fig:Re-cp-uncertainty} - \ref{Fig:Re-cp-uncertainty-norm} show the average cost (left axis) and uncertainty (right axis) for each episode over the course of learning.}
-\label{Fig:Re-Pendubot-Full-Results} 
+\caption[Uncertainty decomposition for \textbf{pendubot} environment]{Figures show the average cost (left axis) and uncertainty (right axis) for each episode over the course of learning.}
+\label{Fig:Re-pen-full-uncertainty} 
 \end{figure}
 
-\subsection{CartDoublePendulum}
+%
+%
+%
+%
+%
+%
 
 
-\begin{figure}[htp!]    
-  \begin{subfigure}[b]{0.48\linewidth}
+
+
+% \begin{figure}[htp!]    
+%   \begin{subfigure}[b]{0.48\linewidth}
+%     \centering
+%     \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/pen_MC_rollout_Ep_40_Dim_1.png} 
+%     \caption{Pendulum angular velocity $\dot \theta_{2}$} 
+%     \label{Fig:Re-pen-cart-position} 
+%   \end{subfigure} 
+%   \hspace{\fill}  %% maximize space between adjacent subfigures
+%   \begin{subfigure}[b]{0.48\linewidth}
+%     \centering
+%     \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/pen_MC_rollout_Ep_40_Dim_2.png} 
+%     \caption{Pendulum angular velocity $\dot \theta_{3}$} 
+%     \label{Fig:Re-pen-cart-velocity} 
+%   \end{subfigure} 
+
+%   \vspace{4ex}  %% extra vertical space
+%   \begin{subfigure}[b]{0.48\linewidth}
+%     \centering
+%     \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/pen_MC_rollout_Ep_40_Dim_3.png} 
+%     \caption{Pendulum angle $\theta_2$} 
+%     \label{Fig:Re-pen-pen-velocity} 
+%   \end{subfigure} 
+%   \hspace{\fill}
+%   \begin{subfigure}[b]{0.48\linewidth}
+%     \centering
+%     \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/pen_MC_rollout_Ep_40_Dim_4.png} 
+%     \caption{Pendulum angle $\theta_3$} 
+%     \label{Fig:Re-pen-pen-angle} 
+%   \end{subfigure} 
+
+    % \vspace{4ex}
+%   \begin{subfigure}[b]{0.48\linewidth}
+%     \centering
+%     \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/pen_uncertainty.png} 
+%     \caption{Average cost (left axis) and uncertainty decomposition (right axis) for each episode over the course of learning.} 
+%     \label{Fig:Re-pen-uncertainty} 
+%   \end{subfigure}
+%   \hspace{\fill}
+%   \begin{subfigure}[b]{0.48\linewidth}
+%     \centering
+%     \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/pen_uncertainty_norm.png} 
+%     \caption{Average cost (left axis) and ratio of epistemic to total uncertainty (right axis) for each episode over the course of learning.} 
+%     \label{Fig:Re-pen-uncertainty-norm} 
+%   \end{subfigure} 
+% \caption[Monte-Carlo uncertainty decomposition for for \textbf{pendubot} environment]{Monte-Carlo uncertainty decomposition for the \textbf{pendubot} environment. Figs. \ref{Fig:Re-cp-cart-position} - \ref{Fig:Re-cp-pen-angle} show a random sample of the Monte-Carlo trajectories for each of the state variables for episode 20. The first three legend items (actual trajectory, target, PILCO prediction and MC trajectories) correspond to the state variable axis (left axis) and the magenta line shows the percentage of MC trajectories inside PILCO's prediction (2 standard deviations) (right axis). Figs. \ref{Fig:Re-cp-uncertainty} - \ref{Fig:Re-cp-uncertainty-norm} show the average cost (left axis) and uncertainty (right axis) for each episode over the course of learning.}
+% \label{Fig:Re-Pendubot-Full-Results} 
+% \end{figure}
+
+\subsubsection{Pendubot}
+ \begin{figure}[htp!]    
+    \begin{subfigure}[b]{1\linewidth}
     \centering
-    \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/cdp_MC_rollout_Ep_75_Dim_1.png} 
+    \includegraphics[height=0.4\textheight,width=1\textwidth]{Chapter3/Figures/cdp_MC_rollout_Ep_75_Dim_1.png} 
     \caption{Cart position $x_1$} 
     \label{Fig:Re-cdp-cart-position} 
   \end{subfigure} 
   \hspace{\fill}  %% maximize space between adjacent subfigures
-  \begin{subfigure}[b]{0.48\linewidth}
+  \begin{subfigure}[b]{1\linewidth}
     \centering
-    \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/cdp_MC_rollout_Ep_75_Dim_2.png} 
+    \includegraphics[height=0.4\textheight,width=1\textwidth]{Chapter3/Figures/cdp_MC_rollout_Ep_75_Dim_2.png} 
     \caption{Cart velocity $\dot{x}_1$} 
     \label{Fig:Re-cdp-cart-velocity} 
   \end{subfigure} 
-
-  \vspace{4ex}  %% extra vertical space
-  \begin{subfigure}[b]{0.48\linewidth}
+\caption[Monte-Carlo roll outs for \textbf{cart-double-pendulum} cart position and cart velocity]{Monte-Carlo roll outs for the \textbf{cart-double-pendulum} environment for cart position and cart velocity. Figures show a random sample of the Monte-Carlo trajectories for episode 75. The first three legend items (actual trajectory, target, PILCO prediction and MC trajectories) correspond to the state variable axis (left axis) and the magenta line shows the percentage of MC trajectories inside PILCO's prediction (2 standard deviations) (right axis)}
+\label{Re:cdp-MC-roll-outs-1} 
+\end{figure}
+ 
+ 
+\begin{figure}[htp!]    
+   \begin{subfigure}[b]{1\linewidth}
     \centering
-    \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/cdp_MC_rollout_Ep_75_Dim_3.png} 
+    \includegraphics[height=0.4\textheight,width=1\textwidth]{Chapter3/Figures/cdp_MC_rollout_Ep_75_Dim_3.png} 
     \caption{Pendulum angular velocity $\dot{\theta}_2$} 
     \label{Fig:Re-cdp-pen2-velocity} 
   \end{subfigure} 
   \hspace{\fill}
-  \begin{subfigure}[b]{0.48\linewidth}
+  \begin{subfigure}[b]{1\linewidth}
     \centering
-    \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/cdp_MC_rollout_Ep_75_Dim_4.png} 
+    \includegraphics[height=0.4\textheight,width=1\textwidth]{Chapter3/Figures/cdp_MC_rollout_Ep_75_Dim_4.png} 
     \caption{Pendulum angular velocity $\dot{\theta}_3$} 
     \label{Fig:Re-cdp-pen3-velocity} 
   \end{subfigure} 
 
-    \vspace{4ex}
-  \begin{subfigure}[b]{0.48\linewidth}
+\caption[Monte-Carlo roll outs for \textbf{cart-double-pendulum} pendulum angular velocities]{Monte-Carlo roll outs for the \textbf{cart-double-pendulum} environment for  pendulum angular velocities]. Figures show a random sample of the Monte-Carlo trajectories for episode 75. The first three legend items (actual trajectory, target, PILCO prediction and MC trajectories) correspond to the state variable axis (left axis) and the magenta line shows the percentage of MC trajectories inside PILCO's prediction (2 standard deviations) (right axis)}
+\label{Re:cdp-MC-roll-outs-2} 
+\end{figure}
+ 
+\begin{figure}[htp!]    
+    \begin{subfigure}[b]{1\linewidth}
     \centering
-    \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/cdp_MC_rollout_Ep_75_Dim_5.png} 
+    \includegraphics[height=0.4\textheight,width=1\textwidth]{Chapter3/Figures/cdp_MC_rollout_Ep_75_Dim_5.png} 
     \caption{Pendulum angle $\theta_2$} 
     \label{Fig:Re-cdp-angle2} 
   \end{subfigure}
   \hspace{\fill}
-  \begin{subfigure}[b]{0.48\linewidth}
+  \begin{subfigure}[b]{1\linewidth}
     \centering
-    \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/cdp_MC_rollout_Ep_75_Dim_6.png} 
+    \includegraphics[height=0.4\textheight,width=1\textwidth]{Chapter3/Figures/cdp_MC_rollout_Ep_75_Dim_6.png} 
     \caption{Pendulum angle $\theta_3$} 
     \label{Fig:Re-cdp-angle3} 
   \end{subfigure} 
-\caption[Monte-Carlo roll outs for \textbf{cart-double-pendulum} environment]{Monte-Carlo roll outs for the \textbf{cart-double-pendulum} environment. Figs. \ref{Fig:Re-cdp-cart-position} - \ref{Fig:Re-cdp-angle3} show a random sample of the Monte-Carlo trajectories for each of the state variables for episode 75. The first three legend items (actual trajectory, target, PILCO prediction and MC trajectories) correspond to the state variable axis (left axis) and the magenta line shows the percentage of MC trajectories inside PILCO's prediction (2 standard deviations) (right axis).}
-\label{Fig:Re-CartDoublePen-MC-Rollouts} 
-\end{figure}
-
-
-
+\caption[Monte-Carlo roll outs for \textbf{cart-double-pendulum} pendulum angles]{Monte-Carlo roll outs for the \textbf{cart-double-pendulum} environment for  pendulum angles]. Figures show a random sample of the Monte-Carlo trajectories for episode 75. The first three legend items (actual trajectory, target, PILCO prediction and MC trajectories) correspond to the state variable axis (left axis) and the magenta line shows the percentage of MC trajectories inside PILCO's prediction (2 standard deviations) (right axis)}
+\label{Re:cdp-MC-roll-outs-3} 
+\end{figure} 
+ 
+ 
 \begin{figure}[htp!]    
   \begin{subfigure}[b]{1\linewidth}
     \centering
@@ -422,38 +534,89 @@ As the agent interacts with the environment, it exerts its influence through act
     \caption{Average cost (left axis) and uncertainty decomposition (right axis) for each episode over the course of learning.} 
     \label{Fig:Re-cdp-uncertainty-decomposition} 
   \end{subfigure} 
-
-%   \vspace{4ex}  %% extra vertical space
   \begin{subfigure}[b]{1\linewidth}
     \centering
     \includegraphics[height=0.4\textheight,width=1\textwidth]{Chapter3/Figures/cdp_uncertainty_normalised.png} 
     \caption{Average cost (left axis) and ratio of epistemic to total uncertainty (right axis) for each episode over the course of learning.} 
     \label{Fig:Re-cdp-uncertainty-normalised} 
   \end{subfigure} 
- 
-\caption[Monte-Carlo roll outs for \textbf{cart-double-pendulum} environment]{Monte-Carlo uncertainty decomposition for the \textbf{cart-double-pendulum} environment. Figs. \ref{Fig:Re-cdp-uncertainty-decomposition} - \ref{Fig:Re-cdp-uncertainty-normalised} show the average cost (left axis) and uncertainty (right axis) for each episode over the course of learning.}
-\label{Fig:Re-CartDoublePen-Uncertainties} 
+\caption[Uncertainty decomposition for \textbf{cart-double-pole} environment]{Figures show the average cost (left axis) and uncertainty (right axis) for each episode over the course of learning.}
+\label{Fig:Re-cdp-full-uncertainty} 
 \end{figure}
+%
+%
+%
+%
+
+% \begin{figure}[htp!]    
+%   \begin{subfigure}[b]{0.48\linewidth}
+%     \centering
+%     \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/cdp_MC_rollout_Ep_75_Dim_1.png} 
+%     \caption{Cart position $x_1$} 
+%     \label{Fig:Re-cdp-cart-position} 
+%   \end{subfigure} 
+%   \hspace{\fill}  %% maximize space between adjacent subfigures
+%   \begin{subfigure}[b]{0.48\linewidth}
+%     \centering
+%     \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/cdp_MC_rollout_Ep_75_Dim_2.png} 
+%     \caption{Cart velocity $\dot{x}_1$} 
+%     \label{Fig:Re-cdp-cart-velocity} 
+%   \end{subfigure} 
+
+%   \vspace{4ex}  %% extra vertical space
+%   \begin{subfigure}[b]{0.48\linewidth}
+%     \centering
+%     \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/cdp_MC_rollout_Ep_75_Dim_3.png} 
+%     \caption{Pendulum angular velocity $\dot{\theta}_2$} 
+%     \label{Fig:Re-cdp-pen2-velocity} 
+%   \end{subfigure} 
+%   \hspace{\fill}
+%   \begin{subfigure}[b]{0.48\linewidth}
+%     \centering
+%     \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/cdp_MC_rollout_Ep_75_Dim_4.png} 
+%     \caption{Pendulum angular velocity $\dot{\theta}_3$} 
+%     \label{Fig:Re-cdp-pen3-velocity} 
+%   \end{subfigure} 
+
+    % \vspace{4ex}
+%   \begin{subfigure}[b]{0.48\linewidth}
+%     \centering
+%     \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/cdp_MC_rollout_Ep_75_Dim_5.png} 
+%     \caption{Pendulum angle $\theta_2$} 
+%     \label{Fig:Re-cdp-angle2} 
+%   \end{subfigure}
+%   \hspace{\fill}
+%   \begin{subfigure}[b]{0.48\linewidth}
+%     \centering
+%     \includegraphics[height=0.22\textheight,width=1\textwidth]{Chapter3/Figures/cdp_MC_rollout_Ep_75_Dim_6.png} 
+%     \caption{Pendulum angle $\theta_3$} 
+%     \label{Fig:Re-cdp-angle3} 
+%   \end{subfigure} 
+% \caption[Monte-Carlo roll outs for \textbf{cart-double-pendulum} environment]{Monte-Carlo roll outs for the \textbf{cart-double-pendulum} environment. Figs. \ref{Fig:Re-cdp-cart-position} - \ref{Fig:Re-cdp-angle3} show a random sample of the Monte-Carlo trajectories for each of the state variables for episode 75. The first three legend items (actual trajectory, target, PILCO prediction and MC trajectories) correspond to the state variable axis (left axis) and the magenta line shows the percentage of MC trajectories inside PILCO's prediction (2 standard deviations) (right axis).}
+% \label{Fig:Re-CartDoublePen-MC-Rollouts} 
+% \end{figure}
 
 
 
-RESULTS THAT I HAVE
-\begin{itemize}
-    \item Cartpole
-\end{itemize}
+% \begin{figure}[htp!]    
+%   \begin{subfigure}[b]{1\linewidth}
+%     \centering
+%     \includegraphics[height=0.4\textheight,width=1\textwidth]{Chapter3/Figures/cdp_uncertainty.png}
+%     \caption{Average cost (left axis) and uncertainty decomposition (right axis) for each episode over the course of learning.} 
+%     \label{Fig:Re-cdp-uncertainty-decomposition} 
+%   \end{subfigure} 
 
-A list of plots that I want:
-
-\begin{itemize}
-    \item Plots of number of basis functions for each environment used and maybe also convergence plots.
-    \item Plot of a 1D transition function showing the distribution over trajectories on the side. Perhaps also a distribution over losses. I have the GP notebook to do this already.
-    \item Plot showing 1D function with uncertainty breakdown and how it decreases with more data as we become more confident about the weights.
-    \item For each environment, plot of the actual trajectories for the solved environment and a plot of the MC trajectories for the solved environment.
-    \item Plots showing that when PILCO is not learning it is choosing policies with high reward but low epistemic uncertainty.
-    \begin{itemize}
-        \item How to achieve this: 
-    \end{itemize}    
-\end{itemize}
+% %   \vspace{4ex}  %% extra vertical space
+%   \begin{subfigure}[b]{1\linewidth}
+%     \centering
+%     \includegraphics[height=0.4\textheight,width=1\textwidth]{Chapter3/Figures/cdp_uncertainty_normalised.png} 
+%     \caption{Average cost (left axis) and ratio of epistemic to total uncertainty (right axis) for each episode over the course of learning.} 
+%     \label{Fig:Re-cdp-uncertainty-normalised} 
+%   \end{subfigure} 
+ 
+% \caption[Monte-Carlo roll outs for \textbf{cart-double-pendulum} environment]{Monte-Carlo uncertainty decomposition for the \textbf{cart-double-pendulum} environment. Figs. \ref{Fig:Re-cdp-uncertainty-decomposition} - \ref{Fig:Re-cdp-uncertainty-normalised} show the average cost (left axis) and uncertainty (right axis) for each episode over the course of learning.}
+% \label{Fig:Re-CartDoublePen-Uncertainties} 
+% \end{figure}
 
 \section{Discussion}
 
