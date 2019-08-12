@@ -21,8 +21,8 @@ The aim of this dissertation is to lay the foundations for an active-exploration
 \begin{itemize}
     \item Present a variance decomposition that disentangles the sources of uncertainty in the model's predictive distribution that influence PILCO's cost under a particular policy $\pi$.
     \item Create a gold-standard Monte Carlo scheme that separates the two sources of uncertainty and quantifies them.
-    \item Show that for complex environments PILCO's policy gradient method can get temporarily stuck in areas of low cost and low epistemic uncertainty and that this slows down learning.
-    \item Show that when PILCO is learning efficiently, it is selecting policies that correspond to low cost and high epistemic uncertainty. 
+    \item Show that when PILCO is learning efficiently, it is selecting policies that correspond to a high ratio of epistemic cost uncertainty to total cost uncertainty. 
+    \item Provide well documented code to reproduce all the results in this dissertation (see Appendix \ref{A:code}).
 \end{itemize}
 
 \section{Background} %Section - 1.1 
